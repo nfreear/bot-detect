@@ -11,12 +11,37 @@ button,
 input {
   font-size: inherit;
   padding: .4rem 1rem;
+
+  &[disabled] {
+    cursor: not-allowed;
+  }
 }
 
 output {
   display: inline-block;
   min-width: 5rem;
   min-height: 1rem;
+}
+
+[ data-turnstile-error ] {
+  output {
+    color: darkred;
+
+    &:before {
+      content: '❌' / 'Error:';
+      margin-right: .6rem;
+    }
+  }
+
+  bot-detect {
+    border-left: 6px solid red;
+    border-radius: 2px;
+  }
+}
+
+footer {
+  border-top: 1px dotted silver;
+  margin-top: 3rem;
 }
 
 bot-detect {

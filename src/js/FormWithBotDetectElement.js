@@ -1,6 +1,7 @@
 const { fetch, HTMLElement } = window;
 
 /**
+ * A custom element to run bot-detection on a <form> element.
  *
  * @customElement form-with-bot-detect
  *
@@ -13,7 +14,7 @@ const { fetch, HTMLElement } = window;
 export default class FormWithBotDetectElement extends HTMLElement {
   #src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
   #verifyUrl = '/api/siteverify';
-  // #widgetTagName = 'bot-detect';
+  #verified;
   #widgetId;
   #widgetElement;
   #error;
@@ -34,6 +35,9 @@ export default class FormWithBotDetectElement extends HTMLElement {
   get #responseElement () { return this.#form.querySelector('[ name = cf-turnstile-response ]'); }
   get #turnstile () { return window.turnstile; }
   get #response () { return this.#turnstile.getResponse(this.#widgetId); }
+  get #isExpired () { return this.#turnstile.isExpired(); }
+
+  #reset () { return this.#turnstile.reset(); }
 
   #expectations () {
     console.assert(this.#form, 'Missing <form> element');
@@ -69,7 +73,7 @@ export default class FormWithBotDetectElement extends HTMLElement {
   #onLoad (event) {
     console.assert(this.#turnstile, 'Missing CF Turnstile');
 
-    const widgetId = this.#turnstile.render(this.#widgetElement, {
+    this.#widgetId = this.#turnstile.render(this.#widgetElement, {
       language: this.dataset.lang || 'auto',
 	    sitekey: this.#sitekey,
       size: 'flexible',
@@ -88,15 +92,17 @@ export default class FormWithBotDetectElement extends HTMLElement {
     this.#setStatus('error', 'Sorry, there’s a problem with bot detection.');
     this.dataset.turnstileError = errCode;
     this.#error = errCode;
+    this.#token = null;
     this.#submitButton.disabled = true;
     console.error('CF Turnstile Error:', errCode);
   }
 
-  #onExpired (event) {
+  #onExpired (token) {
     this.#setStatus('expired', 'Sorry, bot detection has expired.');
     this.removeAttribute('data-error');
+    this.#token = null;
     this.#submitButton.disabled = true;
-    console.warn('CF Turnstile expired:', event);
+    console.warn('CF Turnstile expired:', new String(token).substring(0, 20));
   }
 
   #onTimeout (event) {
@@ -117,33 +123,37 @@ export default class FormWithBotDetectElement extends HTMLElement {
   #onBeforeSubmit (event) {
     this.#valid = this.#form.reportValidity();
     // this.#status = 'valid';
-    console.debug('Before submit. Valid?', this.#valid);
+    console.debug('Before submit: Form valid?', this.#valid, event);
   }
 
   async #onSubmit (event) {
     event.preventDefault();
 
     try {
-      const resp = await fetch(this.#verifyUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ response: this.#response })
-      });
+      const resp = await fetch(this.#verifyRequest());
       console.assert(resp.ok, `Fetch Error: ${resp.status}`);
       const data = await resp.json();
-
+      this.#verified = data.success;
       console.debug('Verified?', data.success, data, event);
     } catch (error) {
       console.error('Caught:', error);
     }
   }
 
+  #verifyRequest () {
+    return new Request(this.#verifyUrl, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ response: this.#response })
+    });
+  }
+
   #setStatus (status, message = '') {
-    this.#status = status;
     this.dataset.turnstileStatus = status;
+    this.#status = status;
     this.#output.textContent = message;
   }
 }
