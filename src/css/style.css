@@ -1,0 +1,26 @@
+body {
+  background: #fafafa;
+  color: #222;
+  font-family: sans-serif;
+  margin: auto;
+  max-width: 33rem;
+  padding: 0 1rem;
+}
+
+button,
+input {
+  font-size: inherit;
+  padding: .4rem 1rem;
+}
+
+output {
+  display: inline-block;
+  min-width: 5rem;
+  min-height: 1rem;
+}
+
+bot-detect {
+  display: block;
+  min-height: 2rem;
+  margin: 2rem 0;
+}

@@ -1,0 +1,22 @@
+{
+  "name": "form-captcha",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "src/js/FormWithBotDetectElement.js",
+    "./style": "src/css/style.css",
+    "./worker": "lib/cloudflare/worker.js"
+  },
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.0.0",
+    "vitest": "~4.1.0",
+    "wrangler": "^4.147.0"
+  }
+}

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="icon" href="data:;base64,=">
+
+  <title>Form demo</title>
+
+  <h1>Form with background bot detection</h1>
+
+  <my-form-with-bot-detect
+    sitekey="0x4AAAAAAFMBAZfvqVXocu-O"
+    theme="light"
+    appearance="interaction-only"
+    retry-interval="12000"
+    data-lang=""
+    >
+    <form method="post">
+      <p>
+        <output></output>
+      </p>
+
+      <p>
+        <label>
+          Name <input name="name" minlength="3" required>
+        </label>
+      </p>
+
+      <bot-detect></bot-detect>
+
+      <p>
+        <button type="submit">Submit</button>
+      </p>
+    </form>
+  </my-form-with-bot-detect>
+
+
+  <script type="module">
+    import FormWithBotDetectElement from '../js/FormWithBotDetectElement.js';
+
+    customElements.define('my-form-with-bot-detect', FormWithBotDetectElement);
+  </script>
+</html>
