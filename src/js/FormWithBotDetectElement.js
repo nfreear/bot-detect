@@ -8,7 +8,6 @@ const { fetch, HTMLElement } = window;
  * @see https://developers.cloudflare.com/turnstile/get-started/
  * @see https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/
  * @see https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/
- * @see https://developers.cloudflare.com/api/resources/turnstile/
  * @see https://www.cloudflare.com/turnstile-privacy-policy/
  */
 export default class FormWithBotDetectElement extends HTMLElement {
@@ -27,6 +26,10 @@ export default class FormWithBotDetectElement extends HTMLElement {
   get #appearance () { return this.getAttribute('appearance') || 'always'; }
   get #retryIntervalMS () { return parseInt(this.getAttribute('retry-interval') || 8000); } // Milliseconds.
   get #widgetTagName () { return this.getAttribute('selector') || 'bot-detect'; }
+  get #buttonDisable () { return this.hasAttribute('button-disable'); }
+
+  get #successText () { return this.getAttribute('success-text') || 'Success. You’re human!'; }
+  get #expiredText () { return this.getAttribute('expired-text') || 'Sorry, bot detection has expired.'; }
 
   get #form () { return this.querySelector('form'); }
   get #elements () { return this.#form.elements; }
@@ -35,9 +38,9 @@ export default class FormWithBotDetectElement extends HTMLElement {
   get #responseElement () { return this.#form.querySelector('[ name = cf-turnstile-response ]'); }
   get #turnstile () { return window.turnstile; }
   get #response () { return this.#turnstile.getResponse(this.#widgetId); }
-  get #isExpired () { return this.#turnstile.isExpired(); }
+  get #isExpired () { return this.#turnstile.isExpired(this.#widgetId); }
 
-  #reset () { return this.#turnstile.reset(); }
+  #reset () { return this.#turnstile.reset(this.#widgetId); }
 
   #expectations () {
     console.assert(this.#form, 'Missing <form> element');
@@ -93,15 +96,15 @@ export default class FormWithBotDetectElement extends HTMLElement {
     this.dataset.turnstileError = errCode;
     this.#error = errCode;
     this.#token = null;
-    this.#submitButton.disabled = true;
+    this.#submitButton.disabled = this.#buttonDisable;
     console.error('CF Turnstile Error:', errCode);
   }
 
   #onExpired (token) {
-    this.#setStatus('expired', 'Sorry, bot detection has expired.');
+    this.#setStatus('expired', this.#expiredText);
     this.removeAttribute('data-error');
     this.#token = null;
-    this.#submitButton.disabled = true;
+    this.#submitButton.disabled = this.#buttonDisable;
     console.warn('CF Turnstile expired:', new String(token).substring(0, 20));
   }
 
@@ -112,18 +115,18 @@ export default class FormWithBotDetectElement extends HTMLElement {
   }
 
   #onSuccess (token) {
-    this.#setStatus ('success', 'Success');
+    this.#setStatus('success', this.#successText);
     this.removeAttribute('data-error');
     this.#token = token;
     this.#error = undefined;
     this.#submitButton.disabled = false;
-    console.debug('CF Turnstile token:', token);
+    console.debug('CF Turnstile success -> token:', token);
   }
 
   #onBeforeSubmit (event) {
     this.#valid = this.#form.reportValidity();
     // this.#status = 'valid';
-    console.debug('Before submit: Form valid?', this.#valid, event);
+    console.debug('Before submit: Form valid?', this.#valid, this.#elements, event);
   }
 
   async #onSubmit (event) {
