@@ -1,6 +1,6 @@
 {
-  "name": "form-with-bot-detect",
-  "version": "0.0.0",
+  "name": "my-bot-detect",
+  "version": "0.8.0",
   "private": true,
   "type": "module",
   "exports": {
@@ -18,5 +18,7 @@
     "@cloudflare/vitest-plugin": "^1.0.0",
     "vitest": "~4.1.0",
     "wrangler": "^4.147.0"
-  }
+  },
+  "description": "Custom elements to run bot-detection using Cloudflare Turnstile.",
+  "license": "MIT"
 }

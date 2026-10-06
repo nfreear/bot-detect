@@ -5,14 +5,13 @@ const { fetch, HTMLElement } = window;
  *
  * @customElement form-with-bot-detect
  *
- * @see https://developers.cloudflare.com/turnstile/get-started/
  * @see https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/widget-configurations/
  * @see https://developers.cloudflare.com/turnstile/troubleshooting/client-side-errors/error-codes/
  * @see https://www.cloudflare.com/turnstile-privacy-policy/
  */
 export default class FormWithBotDetectElement extends HTMLElement {
   #src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-  #verifyUrl = '/api/siteverify';
+  #verifyUrl = '/api/ts/siteverify';
   #verified;
   #widgetId;
   #widgetElement;
@@ -20,6 +19,7 @@ export default class FormWithBotDetectElement extends HTMLElement {
   #status;
   #token;
   #valid;
+  #config;
 
   get #sitekey () { return this.getAttribute('sitekey'); }
   get #theme () { return this.getAttribute('theme') || 'auto'; }
@@ -30,6 +30,8 @@ export default class FormWithBotDetectElement extends HTMLElement {
 
   get #successText () { return this.getAttribute('success-text') || 'Success. You’re human!'; }
   get #expiredText () { return this.getAttribute('expired-text') || 'Sorry, bot detection has expired.'; }
+  get #errorText () { return this.getAttribute('error-text') || 'Sorry, there’s a problem with bot detection.'; }
+  get #timeoutText () { return this.getAttribute('timeout-text') || 'Challenge timed out'; }
 
   get #form () { return this.querySelector('form'); }
   get #elements () { return this.#form.elements; }
@@ -76,23 +78,26 @@ export default class FormWithBotDetectElement extends HTMLElement {
   #onLoad (event) {
     console.assert(this.#turnstile, 'Missing CF Turnstile');
 
-    this.#widgetId = this.#turnstile.render(this.#widgetElement, {
+    this.#config = {
       language: this.dataset.lang || 'auto',
 	    sitekey: this.#sitekey,
+      appearance: this.#appearance,
       size: 'flexible',
       theme: this.#theme,
+      tabindex: -1,
       'retry-interval': this.#retryIntervalMS,
 	    callback: (token) => this.#onSuccess(token),
       'error-callback': (err) => this.#onError(err),
       'expired-callback': (ev) => this.#onExpired(ev),
       'timeout-callback': (ev) => this.#onTimeout(ev),
-    });
+    };
+    this.#widgetId = this.#turnstile.render(this.#widgetElement, this.#config);
 
     console.debug('form-with-bot-detect:', [this], event);
   }
 
   #onError (errCode) {
-    this.#setStatus('error', 'Sorry, there’s a problem with bot detection.');
+    this.#setStatus('error', this.#errorText);
     this.dataset.turnstileError = errCode;
     this.#error = errCode;
     this.#token = null;
@@ -109,7 +114,7 @@ export default class FormWithBotDetectElement extends HTMLElement {
   }
 
   #onTimeout (event) {
-    this.#setStatus('timeout', 'Challenge timed out');
+    this.#setStatus('timeout', this.#timeoutText);
     this.removeAttribute('data-error');
     console.warn('CF Turnstile timeout:', event);
   }

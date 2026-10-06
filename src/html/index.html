@@ -11,6 +11,9 @@
 
   <h1>Form with bot detection</h1>
 
+  <p>Custom elements to run bot-detection using <a href="https://www.cloudflare.com/products/turnstile/">Cloudflare Turnstile</a>, or similar.</p>
+
+
   <my-form-with-bot-detect
     sitekey="0x4AAAAAAFMBAZfvqVXocu-O"
     theme="light"
@@ -25,7 +28,7 @@
 
       <p>
         <label>
-          Your name <input name="name" minlength="3" required>
+          Your name <input name="name" autocomplete="name" minlength="3" required>
         </label>
       </p>
 
@@ -37,8 +40,9 @@
     </form>
   </my-form-with-bot-detect>
 
+
   <footer>
-    <p>Source: <a href="https://github.com/nfreear/form-captcha">@nfreear/form-captcha</a></p>
+    <p>Source: <a href="https://github.com/nfreear/bot-detect">@nfreear/bot-detect</a></p>
   </footer>
 
 

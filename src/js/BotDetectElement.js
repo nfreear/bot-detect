@@ -15,7 +15,7 @@ export default class BotDetectElement extends HTMLElement {
 
   get #novalidate () { return this.hasAttribute('novalidate'); }
   // Was: get #delayMS () { return parseInt(this.getAttribute('delay') || 1000); }
-  get #message () { return this.getAttribute('message') || 'Please verify the form'; }
+  get #message () { return this.getAttribute('message') || 'Please verify that you’re human'; }
   get #input () { return this.querySelector('input'); }
   get #_name () { return this.#input.name; }
 
