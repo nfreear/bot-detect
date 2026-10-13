@@ -21,21 +21,37 @@
     retry-interval="12000"
     data-lang=""
     >
-    <form method="post">
+    <form method="post" action="/api/ts/siteverify">
       <p>
-        <output></output>
+        <output id="top"></output>
       </p>
 
       <p>
-        <label>
-          Your name <input name="name" autocomplete="name" minlength="3" required>
-        </label>
+        <label for="name">Your name</label>
+        <my-input autocomplete="name" minlength="2" required>
+          <input id="name" name="name">
+        </my-input>
+      </p>
+      <p>
+        <label for="email">Your email</label>
+        <my-input type="email" autocomplete="email" minlength="8" required>
+          <input id="email" name="email">
+        </my-input>
+      </p>
+      <p>
+        <my-input required>
+          <input id="cb1" name="agree" type="checkbox">
+          <label for="cb1">Do you agree to …?</label>
+        </my-input>
       </p>
 
-      <bot-detect novalidate></bot-detect>
+      <bot-detect id="bot-detect_1" novalidate></bot-detect>
 
       <p>
         <button type="submit">Submit</button>
+      </p>
+      <p>
+        <output id="result"></output>
       </p>
     </form>
   </my-form-with-bot-detect>
@@ -45,6 +61,12 @@
     <p>Source: <a href="https://github.com/nfreear/bot-detect">@nfreear/bot-detect</a></p>
   </footer>
 
+
+  <script type="importmap"> {
+    "imports": {
+      "my-form-validator": "https://esm.sh/gh/nfreear/form-validator"
+    }
+  } </script>
 
   <script type="module" src="../js/app.js?run"></script>
 </html>

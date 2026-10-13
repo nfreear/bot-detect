@@ -2,9 +2,9 @@ body {
   background: #f9f9f9;
   color: #222;
   font-family: sans-serif;
-  line-height: 1.4;
+  line-height: 1.5;
   margin: auto;
-  max-width: 33rem;
+  max-width: 34rem;
   padding: 0 1rem;
 }
 
@@ -16,6 +16,19 @@ input {
   &[disabled] {
     cursor: not-allowed;
   }
+
+  &[ type = checkbox ] {
+    height: 1.2rem;
+    width: 1.2rem;
+    margin-left: 0;
+  }
+}
+
+label {
+  display: inline-block;
+  min-width: 5rem;
+  padding-top: .25rem;
+  vertical-align: top;
 }
 
 output {
@@ -25,11 +38,11 @@ output {
 }
 
 [ data-turnstile-error ] {
-  output {
+  output#top {
     color: darkred;
 
     &:before {
-      content: '❌' / 'Error:';
+      content: '⚠️' / 'Error:'; /* '⚠️' '❌' */
       margin-right: .5rem;
     }
   }
@@ -54,6 +67,21 @@ bot-detect {
   display: block;
   min-height: .5rem;
   margin: 1.5rem 0;
+}
+
+my-input,
+my-feedback {
+  display: inline-block;
+  min-height: 3.5rem;
+
+  /* &[ valid = false ] { */
+  &::part(alert) {
+    color: darkred;
+    display: block;
+    font-size: small;
+    margin-top: .15rem;
+    max-width: 26rem;
+  }
 }
 
 * {

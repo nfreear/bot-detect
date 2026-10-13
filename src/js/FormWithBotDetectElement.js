@@ -56,8 +56,8 @@ export default class FormWithBotDetectElement extends HTMLElement {
     super();
     this.#expectations();
     this.#initializeBotDetection();
-    this.#submitButton.addEventListener('click', (ev) => this.#onBeforeSubmit(ev));
-    this.#form.addEventListener('submit', (ev) => this.#onSubmit(ev));
+    // Was: this.#submitButton.addEventListener('click', (ev) => this.#onBeforeSubmit(ev));
+    // Was: this.#form.addEventListener('submit', (ev) => this.#onSubmit(ev));
   }
 
   #initializeBotDetection () {
@@ -128,17 +128,17 @@ export default class FormWithBotDetectElement extends HTMLElement {
     console.debug('CF Turnstile success -> token:', token);
   }
 
-  #onBeforeSubmit (event) {
+  #_onBeforeSubmit (event) { /** @Deprecated */
     this.#valid = this.#form.reportValidity();
     // this.#status = 'valid';
     console.debug('Before submit: Form valid?', this.#valid, this.#elements, event);
   }
 
-  async #onSubmit (event) {
+  async #_onSubmit (event) { /** @Deprecated */
     event.preventDefault();
 
     try {
-      const resp = await fetch(this.#verifyRequest());
+      const resp = await fetch(this._verifyRequest());
       console.assert(resp.ok, `Fetch Error: ${resp.status}`);
       const data = await resp.json();
       this.#verified = data.success;
@@ -148,8 +148,8 @@ export default class FormWithBotDetectElement extends HTMLElement {
     }
   }
 
-  #verifyRequest () {
-    return new Request(this.#verifyUrl, {
+  _verifyRequest () {
+    return new Request(this.#form.action, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

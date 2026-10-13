@@ -19,7 +19,7 @@ export default class BotDetectElement extends HTMLElement {
   get #input () { return this.querySelector('input'); }
   get #_name () { return this.#input.name; }
 
-  get value () { return this.#input.value; }
+  get value () { return this.#input && this.#input.value; }
   get validity () { return this.#internals && this.#internals.validity; } // Was: { ...{}, ...this.#internals.validity, ...{ tooShort: this.#tooShort, valueMissing: this.#valueMissing } };
   get validationMessage () { return this.#internals ? this.#internals.validationMessage : ''; }
   get willValidate () { return this.#internals ? this.#internals.willValidate : false; }
